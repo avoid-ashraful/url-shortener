@@ -67,16 +67,15 @@ class TestLinkRetrieveViews(TestLinkBase):
 
     def test_link_retrieve(self, client, random_url, url, links):
 
-        data = {"key": links[0].key}
-        response = client.get(url, data=data)
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data.get("url_address") == links[0].url_address
         assert response.data.get("key") == links[0].key
 
-    def test_link_retrieve_not_found_(self, client, random_url, url, links):
+    def test_link_retrieve_not_found(self, client):
 
-        data = {"key": FuzzyText().fuzz()}
-        response = client.get(url, data=data)
+        url = reverse("link-retrieve", args=[FuzzyText().fuzz()])
+        response = client.get(url)
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
