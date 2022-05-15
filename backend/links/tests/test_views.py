@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse
 from rest_framework import status
+from factory.fuzzy import FuzzyText
 
 from links.models import Link
 from links.tests.factories import LinkFactory
@@ -50,6 +51,13 @@ class TestLinkCreateViews(TestLinkBase):
             response.data.get("key")
             == Link.objects.get(url_address=response.data.get("url_address")).key
         )
+
+    def test_invalid_link_creation(self, client, random_url, url, links):
+
+        data = {"url_address": FuzzyText().fuzz()}
+        response = client.post(url, data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 class TestLinkRetrieveViews(TestLinkBase):
