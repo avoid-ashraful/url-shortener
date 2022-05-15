@@ -13,9 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+
+from django.urls import path, include
+from links.urls import app_name
+from links.views import LinkRetrieveAPIView
+
+api_patterns = [
+    path(f"{app_name}/", include("links.urls", namespace="link")),
+]
+
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(
+        "api/",
+        include(arg=(api_patterns, "url_shortener"), namespace="api"),
+    ),
+    path(
+        "<str:key>/",
+        LinkRetrieveAPIView.as_view(),
+        name="link-retrieve",
+    ),
 ]
