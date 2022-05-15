@@ -25,12 +25,12 @@ api_patterns = [
 
 urlpatterns = [
     path(
-        "api/",
-        include(arg=(api_patterns, "url_shortener"), namespace="api"),
-    ),
-    path(
-        "<str:key>/",
+        "<str:key>",
         LinkRetrieveAPIView.as_view(),
         name="link-retrieve",
+    ),
+    path(
+        "api/",
+        include(arg=(api_patterns, "url_shortener"), namespace="api"),
     ),
 ]
