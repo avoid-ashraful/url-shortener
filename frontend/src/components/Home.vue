@@ -1,12 +1,16 @@
 <template>
-  <div class="hello">
+  <div class="url-fetch">
+    <h5>{{ urlFetchMessage }}</h5>
+  </div>
+  <div class="url-creation" v-if="!inputUrlKey">
     <h5>Url Shortener</h5>
     <span class="p-input-icon-right">
-      <i class="pi pi-spin pi-spinner" />
+      <!-- <i class="pi pi-spin pi-spinner" /> -->
       <InputText
         type="url"
         v-model="inputUrl"
-        placeholder="Large"
+        placeholder="Url"
+        class="p-inputtext-lg"
         v-on:keyup.enter="submitUrl"
       />
       <h5>{{ validationMessage }}</h5>
@@ -22,17 +26,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { ref } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "HomePage",
   setup() {
+    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
     const frontendServerBaseUrl = process.env.VUE_APP_BASE_URL;
     const backendServerBaseUrl = process.env.VUE_APP_BACKEND_BASE_URL;
+
+    const urlFetchMessage = ref("");
     const inputUrl = ref("");
+    const inputUrlKey = ref("");
     const output = ref({});
     const validationMessage = ref("");
+
+    console.log(window.location.pathname);
+    if (window.location.pathname.length > 1) {
+      inputUrlKey.value = window.location.pathname.substring(1);
+      getUrl();
+    }
 
     async function isURLValid(urlAddress: string) {
       validationMessage.value = "";
@@ -79,11 +93,34 @@ export default defineComponent({
       }
     }
 
+    async function getUrl() {
+      urlFetchMessage.value = "";
+      const url = [backendServerBaseUrl, inputUrlKey.value].join("");
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      let jsonValue = await response.json();
+
+      if (response.status == 200) {
+        console.log(jsonValue);
+        window.location.replace(jsonValue.url_address);
+      } else {
+        urlFetchMessage.value = "Your shorten url is not valid!";
+        await delay(5000);
+        window.location.replace("/");
+        return;
+      }
+    }
+
     return {
       submitUrl,
       inputUrl,
       output,
       validationMessage,
+      urlFetchMessage,
+      inputUrlKey,
     };
   },
 });
