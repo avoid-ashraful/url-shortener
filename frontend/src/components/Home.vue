@@ -9,10 +9,13 @@
         placeholder="Large"
         v-on:keyup.enter="submitUrl"
       />
+      <h5>{{ validationMessage }}</h5>
       <h5 v-if="output.message">
         {{ output.message }} <br />
         {{ output.data }}
-        <h2>{{ output.url }}</h2>
+        <h2>
+          <a href="output.url">{{ output.url }}</a>
+        </h2>
       </h5>
     </span>
   </div>
@@ -29,36 +32,50 @@ export default defineComponent({
     const backendServerBaseUrl = process.env.VUE_APP_BACKEND_BASE_URL;
     const inputUrl = ref("");
     const output = ref({});
+    const validationMessage = ref("");
 
-    async function submitUrl(url: string) {
+    async function isURLValid(urlAddress: string) {
+      validationMessage.value = "";
+      try {
+        new URL(urlAddress);
+      } catch (e) {
+        validationMessage.value = "Invalid URL: " + urlAddress;
+        return false;
+      }
+      return true;
+    }
+
+    async function submitUrl() {
       output.value = {};
-      const submisisonUrl = [backendServerBaseUrl, "api/links/"].join("");
-      const response = await fetch(submisisonUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url_address: inputUrl.value }),
-      });
-      let jsonValue = await response.json();
+      if (await isURLValid(inputUrl.value)) {
+        const submisisonUrl = [backendServerBaseUrl, "api/links/"].join("");
+        const response = await fetch(submisisonUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url_address: inputUrl.value }),
+        });
+        let jsonValue = await response.json();
 
-      if (response.status == 201) {
-        output.value = {
-          message: "Successfully created!",
-          data: jsonValue,
-          url: frontendServerBaseUrl + jsonValue.key + "/",
-        };
-      } else if (response.status == 409) {
-        output.value = {
-          message: "This Url is already in database!",
-          data: jsonValue,
-          url: frontendServerBaseUrl + jsonValue.key + "/",
-        };
-      } else {
-        output.value = {
-          message: "Status Code: " + response.status,
-          data: jsonValue,
-        };
+        if (response.status == 201) {
+          output.value = {
+            message: "Successfully created!",
+            data: jsonValue,
+            url: frontendServerBaseUrl + jsonValue.key + "/",
+          };
+        } else if (response.status == 409) {
+          output.value = {
+            message: "This Url is already in database!",
+            data: jsonValue,
+            url: frontendServerBaseUrl + jsonValue.key + "/",
+          };
+        } else {
+          output.value = {
+            message: "Status Code: " + response.status,
+            data: jsonValue,
+          };
+        }
       }
     }
 
@@ -66,6 +83,7 @@ export default defineComponent({
       submitUrl,
       inputUrl,
       output,
+      validationMessage,
     };
   },
 });
