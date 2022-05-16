@@ -18,7 +18,7 @@
         {{ output.message }} <br />
         {{ output.data }}
         <h2>
-          <a href="output.url">{{ output.url }}</a>
+          <a v-bind:href="output.url">{{ output.url }}</a>
         </h2>
       </h5>
     </span>
@@ -76,13 +76,13 @@ export default defineComponent({
           output.value = {
             message: "Successfully created!",
             data: jsonValue,
-            url: frontendServerBaseUrl + jsonValue.key + "/",
+            url: frontendServerBaseUrl + jsonValue.key,
           };
         } else if (response.status == 409) {
           output.value = {
             message: "This Url is already in database!",
             data: jsonValue,
-            url: frontendServerBaseUrl + jsonValue.key + "/",
+            url: frontendServerBaseUrl + jsonValue.key,
           };
         } else {
           output.value = {

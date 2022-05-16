@@ -1,0 +1,51 @@
+version: "3"
+
+volumes:
+  db:
+
+services:
+  worker: &worker
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+      - frontend
+
+  web:
+    <<: *worker
+    volumes:
+      - ./backend:/app/backend
+
+    command: >
+      bash -c "cd backend &&
+      urlwait &&
+      ./manage.py migrate &&
+      ./manage.py runserver 0.0.0.0:8000"
+
+    ports:
+      - "8000:8000"
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+
+    ports:
+      - "8080:8080"
+    restart: always
+
+  db:
+    image: postgres:12
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data/pgdata
