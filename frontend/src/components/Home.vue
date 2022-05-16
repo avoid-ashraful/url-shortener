@@ -4,8 +4,7 @@
   </div>
   <div class="url-creation" v-if="!inputUrlKey">
     <h5>Url Shortener</h5>
-    <span class="p-input-icon-right">
-      <!-- <i class="pi pi-spin pi-spinner" /> -->
+    <span class>
       <InputText
         type="url"
         v-model="inputUrl"
@@ -141,5 +140,11 @@ li {
 }
 a {
   color: #42b983;
+}
+.url-creation {
+  text-align: center;
+}
+.p-inputtext-lg {
+  width: 75%;
 }
 </style>
