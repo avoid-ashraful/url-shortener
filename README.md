@@ -19,7 +19,7 @@
 
 * There are two actions are being performed here:
 
-    * `flake8` : Cheking `coding style` and `linting` of the codebase.
+    * `flake8` : Checking `coding style` and `linting` of the codebase.
     * `pytest` : Executing test suit with coverage.
 
 * To view the actions, 
