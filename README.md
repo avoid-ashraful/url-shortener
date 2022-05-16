@@ -15,4 +15,15 @@
 #### Running Bakcned Test Suit
 * Type `docker-compose -f local.yml exec web bash -c "cd backend && pytest"`
 
+## Gtihub Action
 
+* There are two actions are being performed here:
+
+    * `flake8` : Cheking `coding style` and `linting` of the codebase.
+    * `pytest` : Executing test suit with coverage.
+
+* To view the actions, 
+    * Go to : `https://github.com/avoid-ashraful/url-shortener/actions`
+    * Click to the latest finished workflow.
+    * Click to `build` to see all steps of the workflow.
+    * To see the code coverage expand `Test with pytest and display coverage` this section.
