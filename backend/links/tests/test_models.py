@@ -2,7 +2,7 @@ from links.models import Link
 from links.tests.factories import LinkFactory
 
 
-def unique_key_checker(iteration=10000):
+def unique_key_checker(iteration=1000):
 
     links = LinkFactory.create_batch(size=iteration)
     assert len(links) == iteration

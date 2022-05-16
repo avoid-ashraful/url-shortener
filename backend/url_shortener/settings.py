@@ -87,21 +87,13 @@ WSGI_APPLICATION = "url_shortener.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DEFAULT_DATABASE = config(
-#     "DATABASE_URL",
-#     default="postgres://omni:omni@db:5432/omni",
-#     cast=dj_database_url.parse,
-# )
-#
-# DATABASES = {"default": DEFAULT_DATABASE}
+DEFAULT_DATABASE = config(
+    "DATABASE_URL",
+    default="postgres://omni:omni@db:5432/omni",
+    cast=dj_database_url.parse,
+)
 
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": DEFAULT_DATABASE}
 
 
 # Password validation
