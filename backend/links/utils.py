@@ -44,17 +44,18 @@ def get_unique_key():
 
     links = Link.objects.all()
 
-    url_length = check_r(links.count() + 1)
+    key_length = check_r(links.count() + 1)
     attempts = 0
     while attempts < 5:
         key = "".join(
             random.choice(
                 string.ascii_uppercase + string.ascii_lowercase + string.digits
             )
-            for _ in range(url_length)
+            for _ in range(key_length)
         )
         if not links.filter(key=key).exists() and key != app_name:
             return key
+        attempts += 1
 
     # if not successful in creating unique key for 5 iterations
     raise ValidationError(
