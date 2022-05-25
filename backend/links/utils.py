@@ -1,7 +1,6 @@
 import random
 import string
-from functools import reduce, lru_cache
-import operator as op
+from functools import lru_cache
 
 from django.core.exceptions import ValidationError
 from factory.fuzzy import FuzzyText
@@ -23,16 +22,21 @@ class FuzzyUrl(FuzzyText):
 
 
 @lru_cache(maxsize=128)
-def ncr(n, r):
-    r = min(r, n - r)
-    numer = reduce(op.mul, range(n, n - r, -1), 1)
-    denom = reduce(op.mul, range(1, r + 1), 1)
-    return numer / denom
+def get_factorial(n):
+    result = 1
+    for i in range(1, n+1):
+        result *= i
+    return result
 
 
-def check_r(total_links):
+@lru_cache(maxsize=128)
+def get_nPr(n, r):
+    return get_factorial(n)/get_factorial(n-r)
+
+
+def get_key_length(total_links):
     for i in range(4, 255):
-        k = ncr(62, i)
+        k = get_nPr(62, i)
 
         if (k * 0.8) > total_links:  # avoiding 20%, for less probability of duplication
             return i + 1
@@ -44,7 +48,7 @@ def get_unique_key():
 
     links = Link.objects.all()
 
-    key_length = check_r(links.count() + 1)
+    key_length = get_key_length(links.count() + 1)
     attempts = 0
     while attempts < 5:
         key = "".join(
